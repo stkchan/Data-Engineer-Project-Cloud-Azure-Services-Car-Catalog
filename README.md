@@ -54,6 +54,8 @@ Data Modeling
         - bronze
         - silver
         - gold
+
+         ![Image](https://github.com/user-attachments/assets/bef76e0b-918b-4cf8-adca-f0ff2e7b88c2)
   3. Create **Azure Data Factory (ADF)**
   4. Create **Azure SQL**
       - Create **SQL databases (Single database)**
@@ -64,7 +66,7 @@ Data Modeling
             - Compute + Storage
                - Networking
                  - Connectivity method - Public endpoint
-                 - 
+                 
   5. Create **source_car_data** in **SQL Database**
        ```sql
        CREATE TABLE source_car_data (
@@ -120,6 +122,8 @@ Data Modeling
           - Edit our account & Choose our normal account (account without #ext#)
         - Click **Test Connection** in Catalog
         - Repeat the step with Silver and Gold containers
+          
+          ![Image](https://github.com/user-attachments/assets/1f81ca32-144d-493c-8963-ba375a2e5f6c)
        
 ### Step 2: Data Ingestion Using Azure Data Factory (ADF)   
   1. Create Linked Services for GitHub (HTTP connector) and Azure SQL Database.
