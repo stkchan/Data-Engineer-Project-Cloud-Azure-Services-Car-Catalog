@@ -195,11 +195,23 @@ Data Modeling
                     *
                  FROM
                     watermark_table
-	   	- Click Debug
- 	
-        - current_laod
-          -
+	 	- current_load
+   		  - In source dataset choose **SQL Database**
+       		  - First row only - Checkout
+                  - Use query - Query
+                  	- ```sql
+	                 	SELECT
+	                    		MAX(date_id) AS max_date
+	                 	FROM
+	                    		source_cars_data
+			- Click Debug
 
+		
+
+                      
+	  
+ 	
+       
 
  
       
