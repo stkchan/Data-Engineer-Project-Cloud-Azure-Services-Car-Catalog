@@ -120,3 +120,48 @@ Data Modeling
           - Edit our account & Choose our normal account (account without #ext#)
         - Click **Test Connection** in Catalog
         - Repeat the step with Silver and Gold containers
+       
+### Step 2: Data Ingestion Using Azure Data Factory (ADF)   
+  1. Create Linked Services for GitHub (HTTP connector) and Azure SQL Database.
+     - Go to **Manage** tab
+       - In **Connections** menu, click **Linked services** and click **+ New**
+         - Search for **HTTP**
+           - In Base URL - You can find data in this link https://github.com/anshlambagit/Azure-DE-Project-Resources/tree/main/Raw%20Data
+           - Click on Create
+         - Search for **Azure SQL Database**
+           - Go to **Azure SQL Database**
+             - Go to Security > Networking
+               - In **Exceptions** check Allow Azure services and resources to access this server
+              
+  2. Create **ingestion_source_data** pipeline
+     - In **Activities** tab
+       - search for **Copy data** and drag into canva
+     - In **Source** menu
+       - Click on +New
+       - Seach for HTTP
+       - Choose CSV format
+       - In Relative URL Paste this URL: https://github.com/anshlambagit/Azure-DE-Project-Resources/blob/main/Raw%20Data/SalesData.csv
+       - Click on Advanced
+         - In Parameters menu
+           - Name "load_flag"
+         - In Relative URL
+           - Click Add dynamic content and Add value like this ```anshlambagit/Azure-DE-Project-Resources/refs/heads/main/Raw%20Data/@{dataset().load_flag}```
+     - Go to our Pipeline
+       - Click on **Sink** menu
+         - In Sink dataset, seach for **Azure SQL Database**
+       - Click on **Mapping** menu
+         - Setup mapping columns and data type between source and table
+     - Click on Debug button 
+      
+
+
+
+
+
+
+
+
+
+
+
+    
