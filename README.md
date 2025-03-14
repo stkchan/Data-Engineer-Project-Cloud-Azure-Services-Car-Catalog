@@ -305,6 +305,7 @@ Data Modeling
                      .mode('overwrite')\
                      .option('path', 'abfss://gold@datalakecarproject101.dfs.core.windows.net/factsales')\
                      .saveAsTable('cars_catalog.gold.factsales')
+![Image](https://github.com/user-attachments/assets/3d3680c9-cba5-475b-9255-bd7ca94d2456)
 
 
 ### Step 4: Implementing Delta Live Tables
