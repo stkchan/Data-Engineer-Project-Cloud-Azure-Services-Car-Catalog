@@ -234,6 +234,8 @@ Data Modeling
           - Stored procedure parameters
             - last_load | value = ```@activity('current_load').output.value[0].max_date```
         - Click Debug
+
+![Image](https://github.com/user-attachments/assets/cb08cb15-1b6f-46ff-b617-710e933d7b37)
                
    	   
 
