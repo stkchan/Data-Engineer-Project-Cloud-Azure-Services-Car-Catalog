@@ -180,6 +180,25 @@ Data Modeling
           	COMMIT TRANSACTION;
           	END;
       - In Activities tab search for **Lookup** and drag into canva
+        - last_load
+          - In source dataset choose **SQL Database**
+          - Parameters - table_name
+          - In connection
+            - Table choose **Enter manually**
+            - Table name Click Add dynamic content
+            - In Dataset properties
+              - Parameter table_name add value "watermark_table
+      	  - In setting menu
+            - Use query - Query
+              -  ```sql
+                 SELECT
+                    *
+                 FROM
+                    watermark_table
+	   	- Click Debug
+ 	
+        - current_laod
+          -
 
 
  
