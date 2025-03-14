@@ -240,6 +240,76 @@ Data Modeling
         - Click Debug
 
 ![Image](https://github.com/user-attachments/assets/cb08cb15-1b6f-46ff-b617-710e933d7b37)
+
+   ### Step 3: Create Databricks notebooks for transforming data
+1. Create notebooks for preparing running in Workflows
+   - [Explore to notebooks](https://github.com/stkchan/Data-Engineer-Project-Cloud-Azure-Services-Car-Catalog/tree/main/databricks_notebooks)
+   - db_notebook
+     - Create Catalog & Schema
+   - silver_notebook
+     - Load data from Bronze container and transform data
+       - Add new columns
+       - Change data type
+       - Calculate "Total Unit" in each year and branch
+       - Save transformed data to Silver container
+   - gold_dim_model
+     - Load data from Silver container
+       - Create Surrogate key for incremental load
+       - Apply SCD TYPE 1 (UPSERT)
+         - Insert data if there is new value
+         - Replace previous data if value has changed
+   - gold_dim_branch
+     - Load data from Silver container
+       - Create Surrogate key for incremental load
+       - Apply SCD TYPE 1 (UPSERT)
+         - Insert data if there is new value
+         - Replace previous data if value has changed
+   - gold_dim_dealer
+     - Load data from Silver container
+       - Create Surrogate key for incremental load
+       - Apply SCD TYPE 1 (UPSERT)
+         - Insert data if there is new value
+         - Replace previous data if value has changed
+   - gold_dim_date
+     - Load data from Silver container
+       - Create Surrogate key for incremental load
+       - Apply SCD TYPE 1 (UPSERT)
+         - Insert data if there is new value
+         - Replace previous data if value has changed
+   - gold_fact_sales
+     - Load data
+       ```python
+       	df_dealer = spark.sql("SELECT * FROM cars_catalog.gold.dim_dealer")
+        df_branch = spark.sql("SELECT * FROM cars_catalog.gold.dim_branch")
+        df_model  = spark.sql("SELECT * FROM cars_catalog.gold.dim_model")
+        df_date   = spark.sql("SELECT * FROM cars_catalog.gold.dim_date")
+     - Combine dimensional tables
+       ```python
+       df_fact = df_silver.join(df_dealer, df_silver['dealer_id'] == df_dealer['dealer_id'], how = "left")\
+                   .join(df_branch, df_silver['branch_id'] == df_branch['branch_id'], how = "left")\
+                   .join(df_model,  df_silver['model_id']  == df_model['model_id'],   how = "left")\
+                   .join(df_date,   df_silver['date_id']   == df_date['date_id'],     how = "left")\
+                   .select(df_silver['revenue'], df_silver['unit_sold'], df_silver['revenue_per_unit'], df_branch['dim_branch_key'], df_dealer['dim_dealer_key'], df_model['dim_model_key'], df_date['dim_date_key'])
+     - Checking conditions for inserting data
+       ```python
+          if spark.catalog.tableExists('factsales'):
+              delta_table = DeltaTable.forName(spark, 'cars_catalog.gold.factsales')
+
+              delta_table.alias('target').merge(df_fact.alias('source'), 'target.dim_branch_key = source.dim_branch_key and target.dim_dealer_key = source.dim_dealer_key and target.dim_model_key = source.dim_model_key and target.dim_date_key = source.dim_date_key')\
+                                         .whenMatchedUpdateAll()\
+                                         .whenNotMatchedInsertAll()\
+                                         .execute()
+
+          else:
+              df_fact.write.format('delta')\
+                     .mode('overwrite')\
+                     .option('path', 'abfss://gold@datalakecarproject101.dfs.core.windows.net/factsales')\
+                     .saveAsTable('cars_catalog.gold.factsales')
+
+
+### Step 4: Implementing Delta Live Tables
+	
+        
                
    	   
 
