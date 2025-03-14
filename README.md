@@ -42,3 +42,81 @@ Data Processing & Transformation
 Data Modeling
 * Star Schema – Dimensional modeling approach for reporting and analytics.
 
+## Implementation Steps
+### Step 1: Setting Up Azure Resources
+  1. Create an **Azure Resource Group.**
+  2. Create **Storage account**
+      - Performance - Standard: Recommended for most scenarios (general-purpose v2 account)
+      - Redundancy - Locally-redundant storage (LRS)
+      - Enable hierarchical namespace - Enabled
+      - Access tier - Hot: Optimized for frequently accessed data and everyday usage scenarios
+      - Create Containers in Data storage
+        - bronze
+        - silver
+        - gold
+  3. Create **Azure Data Factory (ADF)**
+  4. Create **Azure SQL**
+      - Create **SQL databases (Single database)**
+         - Create **SQL Database Server**
+            - Authentication method - Use both SQL and Microsoft Entra authentication
+            - Set Microsoft Entra Admin - My User
+            - Workload environment - Development
+            - Compute + Storage
+               - Networking
+                 - Connectivity method - Public endpoint
+                 - 
+  5. Create **source_car_data** in **SQL Database**
+       ```sql
+       CREATE TABLE source_car_data (
+        	branch_id VARCHAR(200),
+        	dealer_id VARCHAR(200),
+        	model_id VARCHAR(200),
+        	revenue BIGINT,
+        	unit_sold BIGINT,
+        	date_id VARCHAR(200),
+        	day INT,
+        	month INT,
+        	year INT,
+        	branch_name VARCHAR(200),
+        	dealer_name VARCHAR(200),
+        	product_name VARCHAR(200)
+        )
+  6. Set up Azure Databricks workspace and configure clusters.
+     - Create a Unity Metastore
+       - In https://accounts.azuredatabricks.net/
+         - User management
+            - Assign a role **Account admin** to my account
+         - Catalog
+            - Create metastore
+              - ADLS Gen 2 path
+                 - Create **Access Connector for Azure Databricks**
+                 - Go to **Storage Account**
+                   - Go to **Access Control (IAM)**
+                     - Click on **+ADD** and **Add role assignment
+                     - Search for **Storage Blob Data Contributor**
+                        - Assign access to - Managed Identity
+                        - Members - Click on **+Select members** and Choose **Access Connector** that we created
+                 - Create a container in **Storage Account** may be naming as "unitymetastore**
+                 - In **ADLS Gen 2 path** add value as **<container_name>@<storage_account_name>.dfs.core.windows.net/<path>**
+                 - In **Access Control Id** just copy **Resouce ID** in Access Connector and paste value
+                 - Go back to **Catalog**
+                   - Click on **Assign to workspace**
+                   - Choose metastore that we just created, Click on Assign and then Click Enable
+      - Create Compute
+          - Click on Create compute
+          - Policy - Personal Compute
+          - Databricks runtime version - Runtime: 15.4 LTS (Scala 2.12, Spark 3.5.0)
+          - Terminate after 30 minutes of inactivity
+      - Create External Data Location
+        - Go to Catalog
+          - Go to Credentials
+          - Click on Create Credential
+          - In **Access Control Id** just copy **Resouce ID** in Access Connector and paste value
+        - Click on Create external location
+          - URL - add value as **abfss://<container_name>@<storage_account_name>.dfs.core.windows.net/<path>**
+          - Storage credential - Choose our Managed Identity
+        - Go back to https://accounts.azuredatabricks.net/
+          - Go to Catalog
+          - Edit our account & Choose our normal account (account without #ext#)
+        - Click **Test Connection** in Catalog
+        - Repeat the step with Silver and Gold containers
