@@ -309,6 +309,10 @@ Data Modeling
 
 
 ### Step 4: Implementing Delta Live Tables
+   1. Enable Delta Live Tables in Databricks.
+   2. Create ETL workflows to transform Silver to Gold Layer.
+      
+![Image](https://github.com/user-attachments/assets/1d4128ad-487c-4afb-90e6-539328817843)
 	
         
                
