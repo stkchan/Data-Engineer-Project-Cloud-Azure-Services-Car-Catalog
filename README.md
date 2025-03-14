@@ -199,13 +199,45 @@ Data Modeling
    		  - In source dataset choose **SQL Database**
        		  - First row only - Checkout
                   - Use query - Query
-                  	- ```sql
+                  	```sql
 	                 	SELECT
 	                    		MAX(date_id) AS max_date
 	                 	FROM
 	                    		source_cars_data
 			- Click Debug
+       	- Copy_Incremental_Data
+          - In source dataset choose **SQL Database**
+          - Use query - Query
+             ```sql
+                SELECT
+    		  *
+                FROM
+                  source_car_data
+                WHERE
+                     date_id >  '@{activity('last_load').output.value[0].last_load}'
+                 AND date_id <= '@{activity('current_load').output.value[0].max_date}'
+           - In Sink menu
+             - Sink Dataset with **Azure DataLake Gen2**
+             - Choose Parquet format
+             - File path = path folder that we created such as ```bronze/rawdata/<filename>```
+             - Import schema - None
+           - In Mapping menu
+             - Click on "Import schemas"
+               - in ```@activity('last_load').out paste value = MIN(date_id)```  -- In this case is from watermark_table
+               - in ```@activity('current_load').out paste value = MAX(date_id)``` -- In this case is from source_cars_data
+              
+      - Create Store Procedure
+        - In Activities tab search for **Stored procedure** and drag into canva
+        - In setting menu
+          - Linked Service with SQL Database
+          - Stored procedure name in this case is StoreProcedure = update_watermark_table
+          - Stored procedure parameters
+            - last_load | value = ```@activity('current_load').output.value[0].max_date```
+        - Click Debug
+               
+   	   
 
+	  	
 		
 
                       
