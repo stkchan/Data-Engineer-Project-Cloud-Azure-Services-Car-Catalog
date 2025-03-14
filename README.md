@@ -151,7 +151,38 @@ Data Modeling
          - In Sink dataset, seach for **Azure SQL Database**
        - Click on **Mapping** menu
          - Setup mapping columns and data type between source and table
-     - Click on Debug button 
+     - Click on Debug button
+    
+  3. Create **incremental_data** pipeline
+      - In Activities tab search for Copy data and drag into canva
+      - Go to SQL Database
+        - Create **Watermark_table**
+          ```sql
+          CREATE TABLE watermark_table (
+	            last_load VARCHAR(2000)
+              )
+      - INSERT value which is initial date_id (based on this project) to **Watermark_table**
+        ```sql
+          INSERT INTO watermark_table
+            VALUES ('DT00001')
+      - Create PROCEDURE "update_watermark_table"
+        ```sql
+          CREATE PROCEDURE update_watermark_table
+          	@lastload VARCHAR(200)
+          AS
+          BEGIN
+          	-- Start the transaction
+          	BEGIN TRANSACTION;
+          
+          	-- Update the incremental column in the table
+          	UPDATE watermark_table
+          	SET last_load = @lastload
+          	COMMIT TRANSACTION;
+          	END;
+      - In Activities tab search for **Lookup** and drag into canva
+
+
+ 
       
 
 
